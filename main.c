@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-int LeggiDati(FILE * file, char nome[14], int * n, int mat[10][10], int valori[40]) {
+int LeggiDati(char nome[14], int * n, int mat[10][10], int valori[40]) {
+    FILE * file;
     int i, j;
 
     file = fopen(nome, "rb");
@@ -26,11 +27,112 @@ int LeggiDati(FILE * file, char nome[14], int * n, int mat[10][10], int valori[4
      return 1;
 }
 
+int risolvi(int n, int mat[10][10], int valori[40]){
+
+    int i = 0, j = 0;
+    int curMax = 0;
+    int curVisibili = 0;
+
+    for(i=0; i<n; i++){
+            curVisibili = 0;
+            curMax = 0;
+        for(j=0; j<n; j++){
+            if(mat[j][i] > curMax){
+                curMax = mat[j][i];
+                curVisibili++;
+            }
+        }
+        if(curVisibili != valori[i]) return 0;
+    }
+
+    for(i = 0; i < n ; i++){
+            curVisibili = 0;
+            curMax = 0;
+        for(j=0; j<n; j++){
+            if(mat[i][n-j-1] > curMax){
+                curMax = mat[i][n-j-1];
+                curVisibili++;
+            }
+        }
+        if(curVisibili != valori[i+n]) return 0;
+    }
+
+    for(i=0; i < n; i++){
+            curVisibili = 0;
+            curMax = 0;
+        for(j=0; j<n; j++){
+
+            if(mat[n-j-1][n-i-1] > curMax){
+                curMax = mat[n-j-1][n-i-1];
+                curVisibili++;
+            }
+        }
+        if(curVisibili != valori[i+2*n]) return 0;
+    }
+
+    for(i = 0; i < n ; i++){
+            curVisibili = 0;
+            curMax = 0;
+        for(j=0; j<n; j++){
+
+            if(mat[n-i-1][j] > curMax){
+                curMax = mat[n-i-1][j];
+                curVisibili++;
+            }
+        }
+        if(curVisibili != valori[i+3*n]) return 0;
+    }
+
+    return 1;
+
+}
+
+int verificaCorretto(int n, int mat[10][10]){
+
+    int i, j;
+    int numeri[10] = {0};
+
+    /*Controllo righe*/
+    for(i = 0; i<n; i++){
+
+        for(j=0;j<n; j++){
+            numeri[j] = 0;
+        }
+
+        for(j=0; j<n; j++){
+            if(numeri[mat[i][j]-1]){
+                return 0;
+            }
+            else {
+                numeri[mat[i][j]-1] = 1;
+            }
+        }
+    }
+
+    /* Controllo colonne */
+    for(i = 0; i<n; i++){
+
+        for(j=0;j<n; j++){
+            numeri[j] = 0;
+        }
+
+        for(j=0; j<n; j++){
+            if(numeri[mat[j][i]-1]){
+                return 0;
+            }
+            else {
+                numeri[mat[j][i]-1] = 1;
+            }
+        }
+    }
+
+    return 1;
+
+}
 int main(){
 
-/*    int i,j;  */
-
-    FILE * infile = NULL;
+/*   int i,j;
+*/
     char nomeFile[14];
     int dim;
     int matrice[10][10];
@@ -38,22 +140,23 @@ int main(){
 
     scanf("%s", nomeFile);
 
-    if(!LeggiDati(infile, nomeFile, &dim, matrice, valoriEsterni)){
+    if(!LeggiDati(nomeFile, &dim, matrice, valoriEsterni)){
         return 0;
     }
 
-    /*          RISOLVI             */
-
-
     /*  Ciclo per stampare la matrice letta in input */
 /*
-    for(i = 0; i<dim; i++){
+   for(i = 0; i<dim; i++){
         for(j = 0; j<dim; j++){
             printf("%d ", matrice[i][j]);
         }
         printf("\n");
     }
+    printf("\n");
+
 */
+    printf("%d\n", verificaCorretto(dim, matrice) && risolvi(dim, matrice, valoriEsterni));
+
 
     /* Cicli per stampare le righe esterne lette */
 
